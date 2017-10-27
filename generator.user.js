@@ -7,7 +7,7 @@
 // @include https://web.tlgrm.ru/*
 // ==/UserScript==
 
-if (document.querySelectorAll('body.m-demo, tg_head_logo_wrap').length > 0) {
+if (document.querySelectorAll('body.m-demo, .tg_head_logo_wrap').length > 0) {
 	
 
 /*! jQuery v3.2.1 | (c) JS Foundation and other contributors | jquery.org/license */
@@ -100,6 +100,11 @@ var customCode = `
 	width: 100%;
 	border-radius: 50%;
 }
+.m-user-ava > span {
+	width: 100%;
+	height: 100%;
+	
+}
 .m-user-message-text {
 	margin: 2px auto;
 }
@@ -187,7 +192,7 @@ var StickerEditor = {
 	createMessage: function (msg) {
 		return `<div class="m-message">
 					<div class="m-user-ava">
-						<img src="${msg.avatar}">
+						` + (msg.avatar ? `<img src="${msg.avatar}">` : msg.avatarHtml) + `
 					</div>
 					<div class="m-user-message">																	
 						<span contentEditable class="m-user-name ${msg.authorClass}">${msg.author}</span>
@@ -216,23 +221,31 @@ function main(window) {
 			
 			async.each($('.im_message_selected').toArray(), function (el, cb) {
 				var $wrap = $(el).find('.im_content_message_wrap');
-				var $img = $wrap.find('img.im_message_from_photo');
+				var $img = $wrap.find('.im_message_from_photo .im_message_from_photo');
 				
 				var author = $wrap.find('.im_message_author').text();
 				var authorClass = $wrap.find('.im_message_author').attr('class');			
 				var text = $wrap.find('.im_message_text').html();
 				
-				downloadImage($img.attr('src'), function (error, arr) {
-					var base64 = fromArray(arr);
-					
-					selectedMessages.push({
-						avatar: base64,
-						authorClass: authorClass,
-						author: author,
-						text: text
+				var cusMsg = {
+					authorClass: authorClass,
+					author: author,
+					text: text
+				}
+				
+				if ($img.is('img')) {
+					downloadImage($img.attr('src'), function (error, arr) {
+						var base64 = fromArray(arr);
+						cusMsg.avatar = base64;
+						
+						selectedMessages.push(cusMsg);
+						cb();
 					});
+				} else {
+					cusMsg.avatarHtml = $img[0].outerHTML;
+					selectedMessages.push(cusMsg);
 					cb();
-				});
+				}
 			}, function () {
 				renderMessages(selectedMessages);
 				modal.style.display = "block";
@@ -371,7 +384,11 @@ function startObserver() {
 function previewResize() {
 	var val = parseInt(document.getElementById('m-preview-size').value) / 100 * 512;
 	
-	$('.m-user-ava').css('width', val);
+	$('.m-user-ava')
+		.css('width', val)
+		.css('height', val)
+		.css('line-height', val + 'px');
+	
 	var d = 15,
 		marginLeft = val + d,
 		padding = val / 3,
