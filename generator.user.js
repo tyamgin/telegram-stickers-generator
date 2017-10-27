@@ -136,6 +136,10 @@ var customCode = `
 	height: 15px;
 }
 
+#result-png {
+	cursor: pointer;
+}
+
 body.m-demo .m-user-name {
 	color: #539e4f;
 	font-weight: bold;
@@ -163,7 +167,7 @@ var formHtml = `
 					</div>
 				</td>
 				<td>
-					<div id="result-png"></div>		
+					<div id="result-png" title="download"></div>		
 				</td>
 			</tr>
 		</tbody>
@@ -377,6 +381,14 @@ function startObserver() {
 		});
 		observer.observe($('#preview')[0], config);
 	}; 
+	
+	$('body').on('click', '#result-png', function () {
+		var link = document.createElement('a');
+		link.href = $('#result-png canvas')[0].toDataURL();
+		link.download = 'sticker.png';
+		link.click();
+	});
+	
 	previewResize();
 	reDraw();
 }
@@ -386,7 +398,6 @@ function previewResize() {
 	
 	$('.m-user-ava')
 		.css('width', val)
-		.css('height', val)
 		.css('line-height', val + 'px');
 	
 	var d = 15,
