@@ -72,7 +72,7 @@ var customCode = `
 .m-preview {
 	display: table;
 	width: 512px;
-	height: 512px;
+	/*height: 512px;*/
 	float: left;
 	
 	font-family: "Open Sans", "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;
@@ -148,7 +148,7 @@ body.m-demo .m-user-name {
 `;
 
 var formHtml = `
-	<input type="range" min="9" max="30" style="width:512px" id="m-preview-size" value="11">
+	<input type="range" min="9" max="30" style="width:512px" id="m-preview-size" step="0.1" value="11">
 
 	<table>
 		<thead>
@@ -394,7 +394,7 @@ function startObserver() {
 }
 
 function previewResize() {
-	var val = parseInt(document.getElementById('m-preview-size').value) / 100 * 512;
+	var val = parseFloat(document.getElementById('m-preview-size').value) / 100 * 512;
 	
 	$('.m-user-ava')
 		.css('width', val)
@@ -412,7 +412,7 @@ function previewResize() {
 	$('.m-user-message').css('width', width);
 	$('.m-user-message').css('margin-left', marginLeft + 'px');
 	$('.m-user-message').css('padding', padding + 'px');
-	$('#preview').css('font-size', val / 3.1 + 'px');
+	$('#preview').css('font-size', val / 2.8 + 'px');
 	
 	$('.m-cloud-gray').css('left', marginLeft - cloudWidth + border);
 	$('.m-cloud-white').css('left', marginLeft - cloudWidth + 2*border + 2).css('bottom', border + 'px');
